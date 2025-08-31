@@ -5,10 +5,14 @@ import json
 import urllib.parse
 import test_recorded
 
-sys.path.append('bn_python_common.zip')
-from bn_python_common import *
+try:
+    from shinerainsevenlib.standard import *
+    from shinerainsevenlib.core import *
+except ImportError:
+    raise ImportError('Please first run ' + 
+        '`pip install shinerainsevenlib` to run these tests.')
 
-configText = files.readall('../configs.json', encoding='utf-8')
+configText = files.readAll('../configs.json', encoding='utf-8')
 configs = json.loads(configText)
 assertEq('/mock.zendesk.com', configs['overrideJobStatusUrlPrefix'])
 
@@ -118,6 +122,8 @@ def sendImpl(method, endpoint, jsonData=None, encodedQueryString=''):
             return json.loads(r.text)
         except:
             assertTrue(False, 'looks like the json we got does not parse', r.text)
+    
+    return None
 
 
 
@@ -145,9 +151,9 @@ def checkJobStatusOk(response, expectedStatus):
         assertTrue(len(response['job_status']['message']) > 0)
         assertEq('completed', response['job_status']['status'])
     elif expectedStatus == 'queued':
-        assertTrue((response['job_status']['total']) == None)
-        assertTrue((response['job_status']['progress']) == None)
-        assertTrue((response['job_status']['message']) == None)
+        assertTrue((response['job_status']['total']) is None)
+        assertTrue((response['job_status']['progress']) is None)
+        assertTrue((response['job_status']['message']) is None)
         assertTrue(response['job_status']['status'] in ['completed', 'queued'], response['job_status']['status'])
     else:
         assertTrue(False, 'unsupported', expectedStatus)
@@ -160,7 +166,7 @@ def assertCustomFieldsEq(flds1, flds2):
         result = {}
         for pair in f:
             # remove null values
-            if pair['value'] != None:
+            if pair['value'] is not None:
                 result[pair['id']] = pair['value']
         return result
     assertEq(fldsToDictAndNoNulls(flds1), fldsToDictAndNoNulls(flds2))
@@ -169,6 +175,7 @@ def assertSubject(expected, got):
     if replayRecordedResponses and expected=='(no subject given)' and got is None:
         return True
     assertEq(expected, got)
+    return None
 
 def testComment(c, authorId, text, public=True):
     if replayRecordedResponses:
@@ -210,6 +217,7 @@ def doRequest(method, *args, **kwargs):
         return requests.post(*args, **kwargs)
     else:
         assertTrue(False, "unknown method")
+        return None
 
 def setupStateIds():
     if replayRecordedResponses:
@@ -225,7 +233,7 @@ def setupStateIds():
         stateIds['customFld3'] = customFlds[lCustomFlds[2]]
         stateIds['admin'] = 111
 
-def sortResultsByOurNumber(obj, stateIds, key):
+def sortResultsByOurNumber(obj, stateIdsLocal, key):
     # maps to our numbers, so we are comparing 'ticket2' to 'ticket3'
-    invertedDict = dict((v, k) for k, v in stateIds.items())
+    invertedDict = dict((v, k) for k, v in stateIdsLocal.items())
     obj[key].sort(key=lambda val: invertedDict.get(val['id']))
