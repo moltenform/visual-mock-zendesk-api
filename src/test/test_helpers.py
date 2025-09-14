@@ -76,6 +76,7 @@ def sendImpl(method, endpoint, jsonData=None, encodedQueryString=''):
         else:
             if not endpoint.endswith('.json'):
                 endpoint += '.json'
+
     if encodedQueryString:
         encodedQueryString = '?' + encodedQueryString
     if endpoint.startswith('http'):

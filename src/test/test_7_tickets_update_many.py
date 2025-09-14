@@ -56,7 +56,7 @@ def go7TicketsUpdateMany():
     allIds = ','.join(str(stateIds[f'ticket{i}']) for i in range(1,7))
     afterMods = sendGet('/api/v2/tickets/show_many', f'ids={allIds}')
     sortResultsByOurNumber(afterMods, stateIds, 'tickets')
-    t1, t2, t3, t4, t5, t6 = afterMods['tickets']
+    t1, t2, t3, _t4, _t5, t6 = afterMods['tickets']
     assertEq(6, len(afterMods['tickets']))
 
     ### confirm last_updated was bumped
@@ -153,4 +153,3 @@ def go7TicketsUpdateMany():
     assertEq(2, len(comments6))
     testComment(comments6[0], authorId=stateIds['user2'], text='testAuthorIdUpdate')
     testComment(comments6[1], authorId=stateIds['user1'], text='addedCommentOn6', public=False)
-    

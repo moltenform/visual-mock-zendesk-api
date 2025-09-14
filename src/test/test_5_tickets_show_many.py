@@ -27,7 +27,7 @@ def go5TicketsShowMany():
     allIds = ','.join(str(stateIds[f'ticket{i}']) for i in range(1,7))
     result = sendGet('/api/v2/tickets/show_many', f'ids={allIds}')
     sortResultsByOurNumber(result, stateIds, 'tickets')
-    t1, t2, t3, t4, t5, t6 = result['tickets']
+    t1, t2, t3, _t4, _t5, t6 = result['tickets']
     assertEq(6, len(result['tickets']))
     for i in range(6):
         stateIds[f'lastUpdateTicket{i+1}'] = result['tickets'][i]['updated_at']
