@@ -1,5 +1,5 @@
-
 from test_helpers import *
+
 
 def go4TicketsCreateMany():
     # author defaults
@@ -87,4 +87,3 @@ def go4TicketsCreateMany():
     assertEq('utest4inline', result['users'][0]['name'])
     assertEq('utest4inline@a.com', result['users'][0]['email'])
     stateIds['user4inline'] = int(result['users'][0]['id'])
-

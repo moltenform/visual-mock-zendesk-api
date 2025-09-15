@@ -1,5 +1,5 @@
-
 from test_helpers import *
+
 
 def go6TicketsShowComments():
     ############## No results ###################
@@ -9,7 +9,7 @@ def go6TicketsShowComments():
     result2 = sendGet(f'/api/v2/tickets/{stateIds["ticket2"]}/comments')
     assertEq(1, result2['count'])
     assertEq(1, len(result2['comments']))
-    
+
     ############## Other result w 1 comment ###################
     result3 = sendGet(f'/api/v2/tickets/{stateIds["ticket3"]}/comments')
     assertEq(1, result3['count'])
@@ -50,7 +50,9 @@ def go6TicketsShowComments():
     assertEq('plainStringComment2', result3['comments'][0]['plain_body'])
     assertEq(stateIds['admin'], result3['comments'][0]['author_id'])
     # look at tickets
-    result = sendGet('/api/v2/tickets/show_many', f'ids={stateIds["ticket3"]},{stateIds["ticket4"]},{stateIds["ticket5"]}')
+    result = sendGet(
+        '/api/v2/tickets/show_many', f'ids={stateIds["ticket3"]},{stateIds["ticket4"]},{stateIds["ticket5"]}'
+    )
     sortResultsByOurNumber(result, stateIds, 'tickets')
     assertEq(stateIds['admin'], result['tickets'][0]['requester_id'])
     assertEq(stateIds['admin'], result['tickets'][0]['submitter_id'])
@@ -58,4 +60,3 @@ def go6TicketsShowComments():
     assertEq(stateIds['user3'], result['tickets'][1]['submitter_id'])
     assertEq(stateIds['admin'], result['tickets'][2]['requester_id'])
     assertEq(stateIds['admin'], result['tickets'][2]['submitter_id'])
-

@@ -1,5 +1,5 @@
-
 from test_helpers import *
+
 
 def go3UsersShowMany():
     ############## No results ###################
@@ -16,8 +16,7 @@ def go3UsersShowMany():
     assertEq('utest1@a.com', result['users'][0]['email'])
 
     ############## Many results, skip missing ###################
-    result = sendGet('/api/v2/users/show_many', 
-        f'ids={stateIds["user2"]},999,{stateIds["user3"]}')
+    result = sendGet('/api/v2/users/show_many', f'ids={stateIds["user2"]},999,{stateIds["user3"]}')
     sortResultsByOurNumber(result, stateIds, 'users')
     assertEq(2, len(result['users']))
     assertEq(stateIds["user2"], result['users'][0]['id'])
@@ -26,4 +25,3 @@ def go3UsersShowMany():
     assertEq(stateIds["user3"], result['users'][1]['id'])
     assertEq('utest3', result['users'][1]['name'])
     assertEq('utest3@a.com', result['users'][1]['email'])
-

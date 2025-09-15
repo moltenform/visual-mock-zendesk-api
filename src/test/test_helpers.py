@@ -1,4 +1,3 @@
-
 import sys
 import requests
 import json
@@ -9,15 +8,14 @@ try:
     from shinerainsevenlib.standard import *
     from shinerainsevenlib.core import *
 except ImportError:
-    raise ImportError('Please first run ' + 
-        '`pip install shinerainsevenlib` to run these tests.')
+    raise ImportError('Please first run ' + '`pip install shinerainsevenlib` to run these tests.')
 
 configText = files.readAll('../configs.json', encoding='utf-8')
 configs = json.loads(configText)
 assertEq('/mock.zendesk.com', configs['overrideJobStatusUrlPrefix'])
 
 # we support with+without .json suffix on all endpoints,
-# so run tests twice, once with this True, and once with it False 
+# so run tests twice, once with this True, and once with it False
 hitEndpointEndingWithJson = False
 
 # instead of contacting mock-zendesk, contact recorded responses
@@ -27,10 +25,10 @@ replayRecordedResponsesCounter = 0
 
 host = f'http://localhost:{configs["portNumber"]}'
 stateIds = dict(
-    admin = None,
-    user1 = None,
-    user2 = None,
-    user3 = None,
+    admin=None,
+    user1=None,
+    user2=None,
+    user3=None,
 )
 
 
@@ -38,6 +36,7 @@ def confirmSet(obj, flds):
     for fld in flds:
         assertTrue(fld in obj, f'field {fld} not present')
         assertTrue(obj[fld], f'field {fld} is null/None')
+
 
 def subInTemplates(s):
     s = s.replace('%FLDID1%', str(stateIds["customFld1"]))
@@ -50,9 +49,9 @@ def subInTemplates(s):
         s = s.replace(f'%TICKET{i+1}%', str(stateIds.get(f'ticket{i+1}', '')))
 
     for obj in configs['customTriggers']:
-        if obj['action']=='removeTagWhenPublicCommentPosted':
+        if obj['action'] == 'removeTagWhenPublicCommentPosted':
             s = s.replace('%TAG_REMOVED_BY_TRIGGER%', obj['value'])
-        if obj['action']=='openPostWhenPublicCommentContainingTextPosted':
+        if obj['action'] == 'openPostWhenPublicCommentContainingTextPosted':
             s = s.replace('%TEXT_NOTICED_BY_TRIGGER%', obj['value'])
 
     return s
@@ -61,11 +60,14 @@ def subInTemplates(s):
 def quote(s):
     return urllib.parse.quote(s)
 
+
 def sendGet(endpoint, encodedQueryString=''):
     return sendImpl('GET', endpoint, encodedQueryString=encodedQueryString)
 
+
 def sendPost(endpoint, jsonData):
     return sendImpl('POST', endpoint, jsonData=jsonData)
+
 
 def sendImpl(method, endpoint, jsonData=None, encodedQueryString=''):
     global configs
@@ -100,7 +102,6 @@ def sendImpl(method, endpoint, jsonData=None, encodedQueryString=''):
         except:
             assertTrue(False, 'looks like the json we are about to send does not parse', jsonData)
 
-    
     trace('fullEndpoint=' + fullEndpoint, jsonData, '\n\n\n')
     if replayRecordedResponses:
         global replayRecordedResponsesCounter
@@ -112,7 +113,7 @@ def sendImpl(method, endpoint, jsonData=None, encodedQueryString=''):
     else:
         r = doRequest(method, fullEndpoint, headers=headers, data=jsonData)
 
-    if not (r.status_code>=200 and r.status_code<=299):
+    if not (r.status_code >= 200 and r.status_code <= 299):
         trace('was sending,', method, fullEndpoint, jsonData)
         if 'x-zendesk-api-warn' in r.headers:
             trace('x-zendesk-api-warn = ' + r.headers['x-zendesk-api-warn'])
@@ -123,9 +124,8 @@ def sendImpl(method, endpoint, jsonData=None, encodedQueryString=''):
             return json.loads(r.text)
         except:
             assertTrue(False, 'looks like the json we got does not parse', r.text)
-    
-    return None
 
+    return None
 
 
 def sendPostAndGetJob(endpoint, jsonData):
@@ -135,17 +135,19 @@ def sendPostAndGetJob(endpoint, jsonData):
     checkJobStatusOk(response, 'completed')
     return response['job_status']
 
+
 def stripComments(s):
     lines = s.replace('\r\n', '\n').split('\n')
     lines = jslike.map(lines, lambda line: line.split('###')[0])
     return '\n'.join(lines)
-    
+
+
 def checkJobStatusOk(response, expectedStatus):
     theId = response['job_status']['id']
     if not replayRecordedResponses:
         assertTrue(configs['overrideJobStatusUrlPrefix'] in response['job_status']['url'])
     assertTrue(response['job_status']['url'].endswith(f'/api/v2/job_statuses/{theId}.json'))
-    
+
     if expectedStatus == 'completed':
         assertTrue(int(response['job_status']['total']) > 0)
         assertTrue(int(response['job_status']['progress']) > 0)
@@ -159,8 +161,10 @@ def checkJobStatusOk(response, expectedStatus):
     else:
         assertTrue(False, 'unsupported', expectedStatus)
 
+
 def assertTagsEq(tags1, tags2):
     assertEq(sorted(tags1), sorted(tags2))
+
 
 def assertCustomFieldsEq(flds1, flds2):
     def fldsToDictAndNoNulls(f):
@@ -170,13 +174,16 @@ def assertCustomFieldsEq(flds1, flds2):
             if pair['value'] is not None:
                 result[pair['id']] = pair['value']
         return result
+
     assertEq(fldsToDictAndNoNulls(flds1), fldsToDictAndNoNulls(flds2))
 
+
 def assertSubject(expected, got):
-    if replayRecordedResponses and expected=='(no subject given)' and got is None:
+    if replayRecordedResponses and expected == '(no subject given)' and got is None:
         return True
     assertEq(expected, got)
     return None
+
 
 def testComment(c, authorId, text, public=True):
     if replayRecordedResponses:
@@ -191,6 +198,7 @@ def testComment(c, authorId, text, public=True):
     assertEq(public, c['public'])
     assertEq(authorId, c['author_id'])
     assertEq([], c['attachments'])
+
 
 def testBatchResults(result, action, status, hasSuccess=False):
     for i, item in enumerate(result['results']):
@@ -220,6 +228,7 @@ def doRequest(method, *args, **kwargs):
         assertTrue(False, "unknown method")
         return None
 
+
 def setupStateIds():
     if replayRecordedResponses:
         stateIds['customFld1'] = 10993199398427
@@ -233,6 +242,7 @@ def setupStateIds():
         stateIds['customFld2'] = customFlds[lCustomFlds[1]]
         stateIds['customFld3'] = customFlds[lCustomFlds[2]]
         stateIds['admin'] = 111
+
 
 def sortResultsByOurNumber(obj, stateIdsLocal, key):
     # maps to our numbers, so we are comparing 'ticket2' to 'ticket3'

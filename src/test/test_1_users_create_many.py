@@ -1,10 +1,10 @@
-
 from test_helpers import *
+
 
 def go1UsersCreateMany():
     if not getInputBool('OK to run this test, which will reset all tickets+users?'):
         assertTrue(False, 'cancelling test')
-    
+
     ############## Reset state ###################
     sendPost('/api/delete_all', {})
 
@@ -25,7 +25,6 @@ def go1UsersCreateMany():
 }]}'''
     assertException(lambda: sendPost('/api/v2/users/create_many', s), Exception)
 
-    
     ############## Successes ###################
     template = r'''{"users": [
 {
@@ -57,7 +56,7 @@ def go1UsersCreateMany():
     '''
     result = sendPostAndGetJob('/api/v2/users/create_many', template)
     assertEq(2, len(result['results']))
-    expectedAction = lambda i: 'update' if i==0 else 'create'
-    expectedStatus = lambda i: 'Updated' if i==0 else 'Created'
+    expectedAction = lambda i: 'update' if i == 0 else 'create'
+    expectedStatus = lambda i: 'Updated' if i == 0 else 'Created'
     testBatchResults(result, hasSuccess=True, action=expectedAction, status=expectedStatus)
     stateIds['user3'] = int(result['results'][1]['id'])

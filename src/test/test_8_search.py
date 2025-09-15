@@ -1,11 +1,11 @@
-
 from test_helpers import *
+
 
 def go8Search():
     if replayRecordedResponses:
         trace('skipping, not yet in replayRecordedResponses')
         return
-        
+
     s = r'''{
     "tickets": [
       {
@@ -106,7 +106,7 @@ def go8Search():
         assertEq(i, result['results'][i]['index'])
         stateIds[f'ticketTestSearch{i+1}'] = int(result['results'][i]['id'])
         assertEq(True, result['results'][i]['success'])
-    
+
     s = r'''{
     "tickets": [
      {
@@ -139,7 +139,7 @@ def go8Search():
     assertEq(2, result['count'])
     assertEq(stateIds['ticketTestSearch2'], result['results'][0]['id'])
     assertEq(stateIds['ticketTestSearch7'], result['results'][1]['id'])
-    
+
     ####### tags search ################
     clauses = [f'tags:searchTag1', f'tags:searchTag2']
     q = f'query=' + quote(subInTemplates(" ".join(clauses))) + '&sort_by=created_at&sort_order=asc'
@@ -151,14 +151,15 @@ def go8Search():
     assertEq(stateIds['ticketTestSearch6'], result['results'][3]['id'])
     assertEq(stateIds['ticketTestSearch7'], result['results'][4]['id'])
     assertEq(stateIds['ticketTestSearch8'], result['results'][5]['id'])
-    
+
     ####### complex search ################
-    clauses = ['-status:closed', 
-        '-tags:%TAG_REMOVED_BY_TRIGGER%', 
-        '-custom_field_%FLDID1%:skipTicketsWhereFld1SaysThis', 
-        '-custom_field_%FLDID2%:skipTicketsWhereFld2SaysThis', 
-        'custom_field_%FLDID3%:includeTicketsWhereFld3SaysThis', 
-        ]
+    clauses = [
+        '-status:closed',
+        '-tags:%TAG_REMOVED_BY_TRIGGER%',
+        '-custom_field_%FLDID1%:skipTicketsWhereFld1SaysThis',
+        '-custom_field_%FLDID2%:skipTicketsWhereFld2SaysThis',
+        'custom_field_%FLDID3%:includeTicketsWhereFld3SaysThis',
+    ]
 
     # sort asc
     q = f'query=' + quote(subInTemplates(" ".join(clauses))) + '&sort_by=created_at&sort_order=asc'
@@ -166,7 +167,7 @@ def go8Search():
     assertEq(2, result['count'])
     assertEq(stateIds['ticketTestSearch1'], result['results'][0]['id'])
     assertEq(stateIds['ticketTestSearch8'], result['results'][1]['id'])
-    
+
     # sort desc
     q = f'query=' + quote(subInTemplates(" ".join(clauses))) + '&sort_by=created_at&sort_order=desc'
     result = sendGet('/api/v2/search', q)
@@ -189,4 +190,3 @@ def go8Search():
     assertEq(2, result['count'])
     assertEq(stateIds['ticketTestSearch1'], result['results'][0]['id'])
     assertEq(stateIds['ticketTestSearch8'], result['results'][1]['id'])
-

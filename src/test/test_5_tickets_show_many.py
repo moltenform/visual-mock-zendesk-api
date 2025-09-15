@@ -1,5 +1,5 @@
-
 from test_helpers import *
+
 
 def go5TicketsShowMany():
     ############## No results ###################
@@ -24,7 +24,7 @@ def go5TicketsShowMany():
     assertSubject('(no subject given)', result['tickets'][1]['subject'])
 
     ############## Thoroughly check data ###################
-    allIds = ','.join(str(stateIds[f'ticket{i}']) for i in range(1,7))
+    allIds = ','.join(str(stateIds[f'ticket{i}']) for i in range(1, 7))
     result = sendGet('/api/v2/tickets/show_many', f'ids={allIds}')
     sortResultsByOurNumber(result, stateIds, 'tickets')
     t1, t2, t3, _t4, _t5, t6 = result['tickets']
@@ -32,9 +32,16 @@ def go5TicketsShowMany():
     for i in range(6):
         stateIds[f'lastUpdateTicket{i+1}'] = result['tickets'][i]['updated_at']
         confirmSet(result['tickets'][i], 'id|created_at|updated_at|description'.split('|'))
-    
 
-    expectedCustomFlds = [{'id': int(subInTemplates('%FLDID1%')), 'value': 'fldval1'}, {'id': int(subInTemplates('%FLDID2%')), 'value': 'fldval2'}]
+    expectedCustomFlds = [
+        {
+            'id': int(subInTemplates('%FLDID1%')),
+            'value': 'fldval1'
+        }, {
+            'id': int(subInTemplates('%FLDID2%')),
+            'value': 'fldval2'
+        }
+    ]
     assertEq(stateIds["ticket1"], t1['id'])
     assertEq('ticket1', t1['subject'])
     assertEq('ticket1', t1['raw_subject'])

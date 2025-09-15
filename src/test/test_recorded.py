@@ -1,4 +1,3 @@
-
 '''
 
 To check accuracy, these are recorded responses from the actual api.
@@ -51,15 +50,12 @@ How I got these values,
 
 simulatedResponses = [
     r'''{}''',
-
     r'''
     Error: cannot pass in id
     ''',
-    
     r'''
     Error: missing email
     ''',
-    
     r'''
 {
   "job_status": {
@@ -69,7 +65,7 @@ simulatedResponses = [
   }
 }
     ''',
-    
+
     # I wrote this one, it might not be 100% correct.
     r'''
 {
@@ -97,7 +93,6 @@ simulatedResponses = [
   }
 }
     ''',
-
     r'''
 {
   "job_status": {
@@ -107,7 +102,7 @@ simulatedResponses = [
   }
 }
     ''',
-    
+
     # I wrote this one, it might not be 100% correct.
     r'''
 {
@@ -135,7 +130,6 @@ simulatedResponses = [
   }
 }
     ''',
-    
     r'''
 {
   "count": 0,
@@ -144,7 +138,6 @@ simulatedResponses = [
   "users": []
 }
     ''',
-    
     r'''
 {
   "count": 1,
@@ -193,7 +186,6 @@ simulatedResponses = [
   ]
 }
     ''',
-    
     r'''
 {
   "count": 0,
@@ -203,7 +195,6 @@ simulatedResponses = [
 }
 
     ''',
-    
     r'''
 {
   "count": 1,
@@ -252,7 +243,6 @@ simulatedResponses = [
   ]
 }
     ''',
-    
     r'''
 {
   "count": 2,
@@ -340,7 +330,6 @@ simulatedResponses = [
   ]
 }
     ''',
-    
     r'''
 {
   "job_status": {
@@ -356,7 +345,6 @@ simulatedResponses = [
 
 
     ''',
-    
     r'''
 {"job_status":{"id":"V3-ca23937b26f18d8b32a6f592b863b6bc","url":"https://exampleendpoint.zendesk.com/api/v2/job_statuses/V3-ca23937b26f18d8b32a6f592b863b6bc.json","total":6,"progress":6,"status":"completed","message":"Completed at 2022-12-11 21:00:36 +0000","results":[
 {"index":0,"id":20,"account_id":15745908},
@@ -366,9 +354,6 @@ simulatedResponses = [
 {"index":4,"id":15,"account_id":15745908},
 {"index":5,"id":17,"account_id":15745908}]}}
     ''',
-    
-   
-    
     r'''
 {
   "count": 1,
@@ -417,7 +402,6 @@ simulatedResponses = [
   ]
 }
     ''',
-    
     r'''
 {
   "count": 0,
@@ -426,7 +410,6 @@ simulatedResponses = [
   "tickets": []
 }
     ''',
-    
     r'''
     {
   "count": 1,
@@ -511,7 +494,6 @@ simulatedResponses = [
   ]
 }
     ''',
-    
     r'''
     {
   "count": 2,
@@ -672,7 +654,6 @@ simulatedResponses = [
   ]
 }
     ''',
-    
     r'''
 {
   "count": 6,
@@ -1126,7 +1107,7 @@ simulatedResponses = [
   ]
 }
     ''',
-    
+
     # /api/v2/tickets/999/comments
     r'''
 Error: {
@@ -1134,7 +1115,6 @@ Error: {
   "error": "RecordNotFound"
 }
     ''',
-    
     r'''
 {
   "comments": [
@@ -1172,7 +1152,6 @@ Error: {
   "previous_page": null
 }
     ''',
-    
     r'''
 {
   "comments": [
@@ -1210,7 +1189,6 @@ Error: {
   "previous_page": null
 }
     ''',
-    
     r'''
 {
   "comments": [
@@ -1276,8 +1254,7 @@ Error: {
   "previous_page": null
 }
     ''',
-    
-   
+
     # second time getting ticket 1
     r'''
     {
@@ -1344,7 +1321,6 @@ Error: {
   "previous_page": null
 }
     ''',
-    
     r'''
     {
   "comments": [
@@ -1382,7 +1358,6 @@ Error: {
   "previous_page": null
 }
     ''',
-    
     r'''
     {
   "comments": [
@@ -1420,7 +1395,6 @@ Error: {
   "previous_page": null
 }
     ''',
-    
     r'''
     {
   "comments": [
@@ -1488,7 +1462,6 @@ Error: {
   "previous_page": null
 }
     ''',
-    
     r'''
     {
   "count": 3,
@@ -1715,5 +1688,4 @@ Error: {
   ]
 }
     '''
-    
 ]

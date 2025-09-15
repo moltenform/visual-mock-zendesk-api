@@ -1,11 +1,11 @@
-
 from test_helpers import *
+
 
 def go7TicketsUpdateMany():
     if replayRecordedResponses:
         trace('skipping, not yet in replayRecordedResponses')
         return
-    
+
     import time
     time.sleep(1.5) # so that last_updated will be different.
     s = r'''{
@@ -52,8 +52,7 @@ def go7TicketsUpdateMany():
         assertEq('Updated', item['status'])
         assertEq(True, item['success'])
 
-
-    allIds = ','.join(str(stateIds[f'ticket{i}']) for i in range(1,7))
+    allIds = ','.join(str(stateIds[f'ticket{i}']) for i in range(1, 7))
     afterMods = sendGet('/api/v2/tickets/show_many', f'ids={allIds}')
     sortResultsByOurNumber(afterMods, stateIds, 'tickets')
     t1, t2, t3, _t4, _t5, t6 = afterMods['tickets']
@@ -61,15 +60,59 @@ def go7TicketsUpdateMany():
 
     ### confirm last_updated was bumped
     for i in range(1, 7):
-        assertEq(stateIds[f'ticket{i}'], afterMods['tickets'][i-1]['id'])
+        assertEq(stateIds[f'ticket{i}'], afterMods['tickets'][i - 1]['id'])
         modded = str(i) in '1,2,3,6'.split(',')
-        wasUpdateBumped = stateIds[f'lastUpdateTicket{i}'] != afterMods['tickets'][i-1]['updated_at']
+        wasUpdateBumped = stateIds[f'lastUpdateTicket{i}'] != afterMods['tickets'][i - 1]['updated_at']
         assertEq(modded, wasUpdateBumped)
 
     ### test the assertCustomFieldsEq helper
-    assertCustomFieldsEq([{'id':1, 'value':'a'}, {'id':2, 'value':'b'}], [{'id':1, 'value':'a'}, {'id':2, 'value':'b'}])
-    assertCustomFieldsEq([{'id':1, 'value':'a'}, {'id':2, 'value':'b'}], [{'id':2, 'value':'b'}, {'id':1, 'value':'a'}])
-    assertException(lambda: assertCustomFieldsEq([{'id':1, 'value':'a'}, {'id':2, 'value':'b'}], [{'id':2, 'value':'b'}, {'id':1, 'value':'c'}]), Exception)
+    assertCustomFieldsEq(
+        [{
+            'id': 1,
+            'value': 'a'
+        }, {
+            'id': 2,
+            'value': 'b'
+        }], [{
+            'id': 1,
+            'value': 'a'
+        }, {
+            'id': 2,
+            'value': 'b'
+        }]
+    )
+    assertCustomFieldsEq(
+        [{
+            'id': 1,
+            'value': 'a'
+        }, {
+            'id': 2,
+            'value': 'b'
+        }], [{
+            'id': 2,
+            'value': 'b'
+        }, {
+            'id': 1,
+            'value': 'a'
+        }]
+    )
+    assertException(
+        lambda: assertCustomFieldsEq(
+            [{
+                'id': 1,
+                'value': 'a'
+            }, {
+                'id': 2,
+                'value': 'b'
+            }], [{
+                'id': 2,
+                'value': 'b'
+            }, {
+                'id': 1,
+                'value': 'c'
+            }]
+        ), Exception
+    )
     assertTagsEq(['a', 'b'], ['a', 'b'])
     assertTagsEq(['a', 'b'], ['b', 'a'])
     assertException(lambda: assertTagsEq(['a', 'b'], ['a', 'a']), Exception)
@@ -83,9 +126,18 @@ def go7TicketsUpdateMany():
     assertEq(stateIds["user1"], t1['submitter_id'])
     assertEq(stateIds["admin"], t1['assignee_id'])
     assertTagsEq(["tag2", "tag3"], t1['tags']) # tags were modified
-    expectedCustomFlds = [{'id': int(subInTemplates('%FLDID1%')), 'value': 'fldval1'}, 
-        {'id': int(subInTemplates('%FLDID2%')), 'value': 'fldval2_b'}, 
-        {'id': int(subInTemplates('%FLDID3%')), 'value': 'fldval3_b'}]
+    expectedCustomFlds = [
+        {
+            'id': int(subInTemplates('%FLDID1%')),
+            'value': 'fldval1'
+        }, {
+            'id': int(subInTemplates('%FLDID2%')),
+            'value': 'fldval2_b'
+        }, {
+            'id': int(subInTemplates('%FLDID3%')),
+            'value': 'fldval3_b'
+        }
+    ]
     assertCustomFieldsEq(expectedCustomFlds, t1['custom_fields'])
     assertCustomFieldsEq(expectedCustomFlds, t1['fields'])
     assertEq(True, t1['is_public'])
@@ -106,7 +158,7 @@ def go7TicketsUpdateMany():
     assertEq(stateIds["user4inline"], t2['submitter_id'])
     assertEq(stateIds["admin"], t2['assignee_id'])
     assertTagsEq(["tag1", "tag2", "tag3"], t2['tags'])
-    expectedCustomFlds =  [{'id': int(subInTemplates('%FLDID2%')), 'value': 'new'}]
+    expectedCustomFlds = [{'id': int(subInTemplates('%FLDID2%')), 'value': 'new'}]
     assertCustomFieldsEq(expectedCustomFlds, t2['custom_fields'])
     assertCustomFieldsEq(expectedCustomFlds, t2['fields'])
     assertEq(True, t2['is_public'])
@@ -143,7 +195,9 @@ def go7TicketsUpdateMany():
     assertEq(stateIds["user1"], t6['requester_id'])
     assertEq(stateIds["user1"], t6['submitter_id'])
     assertEq(stateIds["admin"], t6['assignee_id'])
-    assertTagsEq([subInTemplates('%TAG_REMOVED_BY_TRIGGER%')], t6['tags']) # trigger won't fire because it's a private post
+    assertTagsEq(
+        [subInTemplates('%TAG_REMOVED_BY_TRIGGER%')], t6['tags']
+    ) # trigger won't fire because it's a private post
     assertCustomFieldsEq([], t6['custom_fields'])
     assertCustomFieldsEq([], t6['fields'])
     assertEq(True, t6['is_public'])
